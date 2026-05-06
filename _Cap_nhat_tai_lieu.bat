@@ -1,6 +1,5 @@
 @echo off
-chcp 65001 > nul
-echo Đang tải phiên bản mới nhất từ GitHub về máy...
+echo Dang tai phien ban moi nhat tu GitHub ve may...
 git pull
-echo Hoàn tất cập nhật!
+echo Hoan tat cap nhat!
 pause
