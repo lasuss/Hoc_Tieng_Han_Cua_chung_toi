@@ -1,0 +1,3 @@
+@echo off
+echo Dang chuyen doi cac file Markdown sang HTML...
+python Convert_MD_to_HTML.py
