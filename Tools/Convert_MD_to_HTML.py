@@ -2,7 +2,6 @@ import os
 import markdown
 import codecs
 
-# CSS to make the markdown look beautiful like a printed document
 css_style = """
 <style>
     body {
@@ -95,36 +94,39 @@ css_style = """
 """
 
 def convert_md_to_html():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    md_files = [f for f in os.listdir(current_dir) if f.endswith('.md')]
+    # Thư mục gốc dự án (cha của thư mục Tools)
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    count = 0
+    # Quét toàn bộ các thư mục con
+    for current_root, dirs, files in os.walk(root_dir):
+        # Bỏ qua thư mục .git và Tools
+        if '.git' in current_root or 'Tools' in current_root:
+            continue
+            
+        for file in files:
+            if file.endswith('.md'):
+                input_path = os.path.join(current_root, file)
+                html_file = os.path.splitext(file)[0] + ".html"
+                output_path = os.path.join(current_root, html_file)
 
-    if not md_files:
-        print("Không tìm thấy file .md nào trong thư mục hiện tại.")
-        return
+                print(f"Đang chuyển đổi: {file}...")
 
-    for md_file in md_files:
-        input_path = os.path.join(current_dir, md_file)
-        # Tạo tên file output bằng cách đổi đuôi .md thành .html
-        html_file = os.path.splitext(md_file)[0] + ".html"
-        output_path = os.path.join(current_dir, html_file)
+                try:
+                    with codecs.open(input_path, mode="r", encoding="utf-8") as f:
+                        text = f.read()
 
-        print(f"Đang chuyển đổi: {md_file} -> {html_file}...")
+                    # Format lại các khối ghi chú đặc biệt (Github Alert syntax)
+                    text = text.replace("> [!NOTE]", "> **[GHI CHÚ QUAN TRỌNG]**<br>")
+                    text = text.replace("> [!TIP]", "> **[MẸO HAY]**<br>")
 
-        try:
-            with codecs.open(input_path, mode="r", encoding="utf-8") as f:
-                text = f.read()
+                    # Chuyển Markdown sang HTML
+                    html_content = markdown.markdown(text, extensions=['tables'])
 
-            # Format lại các khối ghi chú đặc biệt (Github Alert syntax)
-            text = text.replace("> [!NOTE]", "> **[GHI CHÚ QUAN TRỌNG]**<br>")
-            text = text.replace("> [!TIP]", "> **[MẸO HAY]**<br>")
+                    # Tiêu đề file HTML lấy từ tên file
+                    title = file.replace(".md", "").replace("_", " ")
 
-            # Chuyển Markdown sang HTML
-            html_content = markdown.markdown(text, extensions=['tables'])
-
-            # Tiêu đề file HTML lấy từ tên file
-            title = md_file.replace(".md", "").replace("_", " ")
-
-            full_html = f"""<!DOCTYPE html>
+                    full_html = f"""<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -140,15 +142,19 @@ def convert_md_to_html():
 </html>
 """
 
-            with codecs.open(output_path, mode="w", encoding="utf-8") as f:
-                f.write(full_html)
-            
-            print(f"Hoàn tất: {html_file}")
-        
-        except Exception as e:
-            print(f"Lỗi khi chuyển đổi {md_file}: {e}")
+                    with codecs.open(output_path, mode="w", encoding="utf-8") as f:
+                        f.write(full_html)
+                    
+                    count += 1
+                except Exception as e:
+                    print(f"Lỗi khi chuyển đổi {file}: {e}")
+
+    if count == 0:
+        print("Không tìm thấy file .md nào trong dự án.")
+    else:
+        print(f"\nĐã hoàn tất chuyển đổi {count} file!")
 
 if __name__ == "__main__":
     convert_md_to_html()
-    print("\nQuá trình chuyển đổi hoàn tất! Nhấn Enter để thoát.")
+    print("\nNhấn Enter để thoát.")
     input()
