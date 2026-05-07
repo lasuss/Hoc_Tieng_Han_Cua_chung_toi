@@ -110,7 +110,7 @@ def convert_md_to_html():
                 html_file = os.path.splitext(file)[0] + ".html"
                 output_path = os.path.join(current_root, html_file)
 
-                print(f"Đang chuyển đổi: {file}...")
+                print(f"Dang chuyen doi: {file}...")
 
                 try:
                     with codecs.open(input_path, mode="r", encoding="utf-8") as f:
@@ -147,14 +147,14 @@ def convert_md_to_html():
                     
                     count += 1
                 except Exception as e:
-                    print(f"Lỗi khi chuyển đổi {file}: {e}")
+                    print(f"Loi khi chuyen doi {file}: {e}")
 
     if count == 0:
-        print("Không tìm thấy file .md nào trong dự án.")
+        print("Khong tim thay file .md nao trong du an.")
     else:
-        print(f"\nĐã hoàn tất chuyển đổi {count} file!")
+        print(f"\nDa hoan tat chuyen doi {count} file!")
 
 if __name__ == "__main__":
     convert_md_to_html()
-    print("\nNhấn Enter để thoát.")
+    print("\nNhan Enter de thoat.")
     input()
